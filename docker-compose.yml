@@ -1,4 +1,5 @@
-version: '3'
+# docker-compose.yml
+version: '3.8'
 
 services:
   backend_rds:
@@ -6,25 +7,37 @@ services:
       context: ./backend_rds
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend_rds:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=backend_rds.settings
+    depends_on:
+      - db
+    networks:
+      - backend
 
   backend_redis:
     build:
       context: ./backend_redis
     ports:
       - "8001:8001"
-    volumes:
-      - ./backend_redis:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=backend_redis.settings
+    networks:
+      - backend
+      - frontend
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "8080:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
+      - "80:80"
+    networks:
+      - frontend
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
+    networks:
+      - backend
+
+networks:
+  backend:
+  frontend:
