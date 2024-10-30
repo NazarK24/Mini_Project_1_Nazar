@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  backend_rds:
+    build:
+      context: ./backend_rds
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend_rds:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_rds.settings
+
+  backend_redis:
+    build:
+      context: ./backend_redis
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend_redis:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=backend_redis.settings
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
