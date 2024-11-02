@@ -1,18 +1,18 @@
-# backend_rds/Dockerfile
-FROM python:3.9-slim
+# Вибираємо офіційний базовий образ Python
+FROM python:3.11-slim
 
+# Встановлюємо робочу директорію всередині контейнера
 WORKDIR /app
 
-# Копіюємо файли проекту
-COPY backend_rds/backend_rds /app/backend_rds
-COPY backend_rds/core /app/core
-COPY backend_rds/requirements.txt /app
-
-# Встановлюємо залежності
+# Копіюємо файл requirements.txt і встановлюємо залежності
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Вказуємо порт для сервера
-EXPOSE 8000
+# Копіюємо весь код в контейнер
+COPY . .
 
-# Запускаємо сервер
-CMD ["python", "core/manage.py", "runserver", "0.0.0.0:8000"]
+# Відкриваємо порт, на якому буде працювати сервіс
+EXPOSE 8001
+
+# Запускаємо додаток
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
