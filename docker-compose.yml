@@ -22,7 +22,7 @@ services:
       - redis_data:/data
 
   backend_rds:
-    image: baclend_rds:latest
+    image: backend_rds:latest
     depends_on:
       - postgres_db
     ports:
