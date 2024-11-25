@@ -20,7 +20,7 @@ jobs:
 
       - name: Copy files to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r ./backend_rds ./backend_redis docker-compouse.yml ubuntu@13.60.229.165:~/project
+          scp -o StrictHostKeyChecking=no -r ./backend_rds ./backend_redis docker-compose.yml ubuntu@13.60.229.165:~/project
 
       - name: SSH into EC2 and restart Docker containers
         run: |
