@@ -10,22 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
-    - name: Copy files to EC2
-      run: |
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./ ubuntu@13.61.33.7:~/project
+      - name: Copy files to EC2
+        run: |
+          scp -o StrictHostKeyChecking=no -r ./your_directory ubuntu@13.60.229.165:~/project
 
-    - name: SSH into EC2 and restart Docker containers
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@13.61.33.7<< 'EOF'
-        cd ~/project
-        docker-compose down
-        docker-compose up -d
-        EOF
+      - name: SSH into EC2 and restart Docker containers
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.60.229.165 << 'EOF'
+          cd ~/project
+          docker-compose down
+          docker-compose up -d
+          EOF
