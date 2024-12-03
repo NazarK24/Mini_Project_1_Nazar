@@ -47,11 +47,11 @@ jobs:
           region: eu-north-1
       - name: Copy files to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r ./backend_rds ./backend_redis docker-compose.yml ubuntu@13.60.167.182:~/project
+          scp -o StrictHostKeyChecking=no -r ./backend_rds ./backend_redis docker-compose.yml ubuntu@16.171.28.229:~/project
       - name: SSH into EC2 and restart Docker containers
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@13.60.167.182 << 'EOF'
-          cd ~/project
+          ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
+          cd /home/ubuntu
           docker-compose down
           docker-compose up -d
           EOF
@@ -70,4 +70,4 @@ jobs:
           aws-region: eu-north-1
       - name: Sync frontend with S3
         run: |
-          aws s3 sync ./frontend/templates s3://mini.backend.s3bucket.demo --delete
+          aws s3 sync ./frontend s3://frontend-static-bucket --delete
