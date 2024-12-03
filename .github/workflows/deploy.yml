@@ -54,6 +54,10 @@ jobs:
     needs: [build-rds, build-redis]
     runs-on: ubuntu-latest
     steps:
+          
+      - name: Check if docker-compose.yml exists
+        run: ls -la docker-compose.yml  # Перевірка наявності файлу
+  
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
