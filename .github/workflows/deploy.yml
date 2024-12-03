@@ -54,10 +54,6 @@ jobs:
     needs: [build-rds, build-redis]
     runs-on: ubuntu-latest
     steps:
-          
-      - name: Check if docker-compose.yml exists
-        run: ls -la docker-compose.yml  # Перевірка наявності файлу
-  
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -65,7 +61,7 @@ jobs:
       
       - name: Copy Compose File to EC2
         run: |
-          scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@16.171.28.229:/home/ubuntu
+          scp -o StrictHostKeyChecking=no /home/ubuntu/docker-compose.yml ubuntu@16.171.28.229:/home/ubuntu
       
       - name: SSH into EC2 and restart Docker containers
         run: |
