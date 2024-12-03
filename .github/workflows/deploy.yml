@@ -91,8 +91,8 @@ jobs:
 
       - name: Sync frontend templates with S3
         run: |
-            aws s3 sync ./frontend/templates s3://mini.backend.s3bucket.demo --delete
+            aws s3 sync ./frontend/templates s3://frontend-static-bucket --delete
         
       - name: Sync config file with S3
         run: |
-            aws s3 cp ./frontend/config.json s3://mini.backend.s3bucket.demo/config.json
+            aws s3 cp ./frontend/config.json s3://frontend-static-bucket/config.json
