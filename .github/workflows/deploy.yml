@@ -1,4 +1,4 @@
-name: Deploy All
+name: Deploy Backend and Frontend
 
 on:
   push:
@@ -6,15 +6,45 @@ on:
       - main
 
 jobs:
-  deploy-backend:
+  build-rds:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
+      - name: Build RDS Image
+        run: |
+          docker build -t backend_rds ./backend_rds
+      - name: Push RDS Image to Registry
+        run: |
+          # Replace with your Docker registry details
+          docker tag backend_rds your-registry/backend_rds:latest
+          docker push your-registry/backend_rds:latest
+
+  build-redis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build Redis Image
+        run: |
+          docker build -t backend_redis ./backend_redis
+      - name: Push Redis Image to Registry
+        run: |
+          # Replace with your Docker registry details
+          docker tag backend_redis your-registry/backend_redis:latest
+          docker push your-registry/backend_redis:latest
+
+  deploy-backend:
+    needs: [build-rds, build-redis]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up AWS EC2 Instance Connect
+        uses: aws-actions/aws-ec2-instance-connect@v1
         with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          instance-id: ${{ secrets.EC2_INSTANCE_ID }}
+          region: eu-north-1
       - name: Copy files to EC2
         run: |
           scp -o StrictHostKeyChecking=no -r ./backend_rds ./backend_redis docker-compose.yml ubuntu@13.60.167.182:~/project
@@ -27,7 +57,7 @@ jobs:
           EOF
 
   sync-frontend:
-    needs: deploy-backend 
+    needs: deploy-backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
