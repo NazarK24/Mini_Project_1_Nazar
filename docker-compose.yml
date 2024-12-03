@@ -35,7 +35,7 @@ services:
       - DB_NAME=mydatabase
       - DB_USER=mypostgres
       - DB_PASSWORD=mypassword1
-      - CORS_ALLOWED_ORIGINS=https://d8s5v5w0sk5z.cloudfront.net
+      - CORS_ALLOWED_ORIGINS=http://d8s5v5w0sk5z.cloudfront.net
 
   backend_redis:
     image: backend_redis:latest
@@ -47,7 +47,7 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_DB=0
-      - CORS_ALLOWED_ORIGINS=https://d8s5v5w0sk5z.cloudfront.net
+      - CORS_ALLOWED_ORIGINS=http://d8s5v5w0sk5z.cloudfront.net
 
 networks:
   my_network:
