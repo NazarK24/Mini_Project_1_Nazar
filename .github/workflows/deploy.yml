@@ -93,11 +93,11 @@ jobs:
         run: |
             echo "Verifying AWS credentials..."
             aws sts get-caller-identity
-            
+
       - name: Sync frontend templates with S3
         run: |
-            aws s3 sync ./frontend/templates s3://frontend-static-bucket --delete
+            aws s3 sync ./frontend/templates s3://frontent-static-bucket --delete 
         
       - name: Sync config file with S3
         run: |
-            aws s3 cp ./frontend/config.json s3://frontend-static-bucket/config.json
+            aws s3 cp ./frontend/config.json s3://frontent-static-bucket/config.json
