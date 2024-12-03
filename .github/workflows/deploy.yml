@@ -19,11 +19,11 @@ jobs:
 
       - name: Copy RDS Files to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r ./backend_rds ubuntu@16.171.28.229:/home/ubuntu
+          scp -o StrictHostKeyChecking=no -r ./backend_rds ubuntu@13.51.158.134:/home/ubuntu
       
       - name: Build RDS Image on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.51.158.134 << 'EOF'
           cd /home/ubuntu/backend_rds
           docker build -t backend_rds .
           EOF
@@ -41,11 +41,11 @@ jobs:
 
       - name: Copy Redis Files to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r ./backend_redis ubuntu@16.171.28.229:/home/ubuntu
+          scp -o StrictHostKeyChecking=no -r ./backend_redis ubuntu@13.51.158.134:/home/ubuntu
 
       - name: Build Redis Image on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.51.158.134 << 'EOF'
           cd /home/ubuntu/backend_redis
           docker build -t backend_redis .
           EOF
@@ -65,11 +65,11 @@ jobs:
       
       - name: Copy Compose File to EC2
         run: |
-          scp -o StrictHostKeyChecking=no ./docker-compose.yml ubuntu@16.171.28.229:/home/ubuntu
+          scp -o StrictHostKeyChecking=no ./docker-compose.yml ubuntu@13.51.158.134:/home/ubuntu
       
       - name: SSH into EC2 and restart Docker containers
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
+          ssh -o StrictHostKeyChecking=no ubuntu@13.51.158.134 << 'EOF'
           cd /home/ubuntu
           docker-compose down
           docker-compose up -d
