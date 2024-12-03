@@ -11,9 +11,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
       - name: Copy RDS Files to EC2
         run: |
           scp -o StrictHostKeyChecking=no -r ./backend_rds ubuntu@16.171.28.229:/home/ubuntu
+      
       - name: Build RDS Image on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
@@ -26,9 +33,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
       - name: Copy Redis Files to EC2
         run: |
           scp -o StrictHostKeyChecking=no -r ./backend_redis ubuntu@16.171.28.229:/home/ubuntu
+
       - name: Build Redis Image on EC2
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
@@ -40,14 +54,15 @@ jobs:
     needs: [build-rds, build-redis]
     runs-on: ubuntu-latest
     steps:
-      - name: Set up AWS EC2 Instance Connect
-        uses: aws-actions/aws-ec2-instance-connect@v1
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          instance-id: ${{ secrets.EC2_INSTANCE_ID }}
-          region: eu-north-1
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      
       - name: Copy Compose File to EC2
         run: |
           scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@16.171.28.229:/home/ubuntu
+      
       - name: SSH into EC2 and restart Docker containers
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
@@ -62,12 +77,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
+
       - name: Sync frontend with S3
         run: |
           aws s3 sync ./frontend s3://frontend-static-bucket --delete
