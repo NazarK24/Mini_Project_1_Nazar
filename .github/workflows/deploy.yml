@@ -11,43 +11,43 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build RDS Image
+      - name: Copy RDS Files to EC2
         run: |
-          docker build -t backend_rds ./backend_rds
-      - name: Push RDS Image to Registry
+          scp -o StrictHostKeyChecking=no -r ./backend_rds ubuntu@16.171.28.229:/home/ubuntu
+      - name: Build RDS Image on EC2
         run: |
-          # Replace with your Docker registry details
-          docker tag backend_rds your-registry/backend_rds:latest
-          docker push your-registry/backend_rds:latest
+          ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
+          cd /home/ubuntu/backend_rds
+          docker build -t backend_rds .
+          EOF
 
   build-redis:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build Redis Image
+      - name: Copy Redis Files to EC2
         run: |
-          docker build -t backend_redis ./backend_redis
-      - name: Push Redis Image to Registry
+          scp -o StrictHostKeyChecking=no -r ./backend_redis ubuntu@16.171.28.229:/home/ubuntu
+      - name: Build Redis Image on EC2
         run: |
-          # Replace with your Docker registry details
-          docker tag backend_redis your-registry/backend_redis:latest
-          docker push your-registry/backend_redis:latest
+          ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
+          cd /home/ubuntu/backend_redis
+          docker build -t backend_redis .
+          EOF
 
   deploy-backend:
     needs: [build-rds, build-redis]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: Set up AWS EC2 Instance Connect
         uses: aws-actions/aws-ec2-instance-connect@v1
         with:
           instance-id: ${{ secrets.EC2_INSTANCE_ID }}
           region: eu-north-1
-      - name: Copy files to EC2
+      - name: Copy Compose File to EC2
         run: |
-          scp -o StrictHostKeyChecking=no -r ./backend_rds ./backend_redis docker-compose.yml ubuntu@16.171.28.229:~/project
+          scp -o StrictHostKeyChecking=no docker-compose.yml ubuntu@16.171.28.229:/home/ubuntu
       - name: SSH into EC2 and restart Docker containers
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@16.171.28.229 << 'EOF'
