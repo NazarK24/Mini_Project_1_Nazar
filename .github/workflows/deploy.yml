@@ -89,11 +89,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
-      - name: Verify AWS Credentials
-        run: |
-            echo "Verifying AWS credentials..."
-            aws sts get-caller-identity
-
       - name: Sync frontend templates with S3
         run: |
             aws s3 sync ./frontend/templates s3://frontent-static-bucket --delete 
@@ -101,3 +96,11 @@ jobs:
       - name: Sync config file with S3
         run: |
             aws s3 cp ./frontend/config.json s3://frontent-static-bucket/config.json
+
+  invalidate-cloudfront:
+    needs: sync-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
