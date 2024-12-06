@@ -57,6 +57,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no ubuntu@${{ vars.EC2_IP_ADDRESS }} << 'EOF'
           cd /home/ubuntu
           docker-compose down
+          docker-compose pull
           docker-compose up -d
           EOF
 
