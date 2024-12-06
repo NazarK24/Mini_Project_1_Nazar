@@ -73,13 +73,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
 
-      - name: Sync frontend templates with S3
+      - name: Sync frontend files with S3
         run: |
-          aws s3 sync ./frontend/templates s3://frontend-static-bucket --delete
-
-      - name: Sync config file with S3
-        run: |
-          aws s3 cp ./frontend/config.json s3://frontend-static-bucket/config.json
+          aws s3 sync ./frontend s3://frontend-static-bucket --delete
 
       - name: Invalidate CloudFront cache
         run: |
