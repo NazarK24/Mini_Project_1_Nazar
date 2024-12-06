@@ -26,12 +26,10 @@ jobs:
 
       - name: Build and Push Docker images
         run: |
-          # Build and push backend_rds image
           docker build -t backend_rds ./backend_rds
           docker tag backend_rds:latest 148761653308.dkr.ecr.eu-north-1.amazonaws.com/backend_rds:latest
           docker push 148761653308.dkr.ecr.eu-north-1.amazonaws.com/backend_rds:latest
 
-          # Build and push backend_redis image
           docker build -t backend_redis ./backend_redis
           docker tag backend_redis:latest 148761653308.dkr.ecr.eu-north-1.amazonaws.com/backend_redis:latest
           docker push 148761653308.dkr.ecr.eu-north-1.amazonaws.com/backend_redis:latest
@@ -55,11 +53,16 @@ jobs:
       - name: SSH into EC2 and restart Docker containers
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ vars.EC2_IP_ADDRESS }} << 'EOF'
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region eu-north-1
+          aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 148761653308.dkr.ecr.eu-north-1.amazonaws.com
           cd /home/ubuntu
           docker-compose down
           docker-compose pull
           docker-compose up -d
           EOF
+        
 
   sync-frontend:
     needs: deploy-backend
