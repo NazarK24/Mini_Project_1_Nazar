@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_USER: mypostgres
-      POSTGRES_PASSWORD: mypassword1
-      POSTGRES_DB: mydatabase
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
     ports:
       - "5432:5432"
     networks:
@@ -22,7 +22,7 @@ services:
       - redis_data:/data
 
   backend_rds:
-    image: backend_rds:latest
+    image: 148761653308.dkr.ecr.eu-north-1.amazonaws.com/backend_rds:latest
     depends_on:
       - postgres
     ports:
@@ -32,13 +32,13 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_NAME=mydatabase
-      - DB_USER=mypostgres
-      - DB_PASSWORD=mypassword1
+      - DB_NAME=database
+      - DB_USER=postgres
+      - DB_PASSWORD=password
       - CORS_ALLOWED_ORIGINS=http://d8s5v5w0sk5z.cloudfront.net
 
   backend_redis:
-    image: backend_redis:latest
+    image: 148761653308.dkr.ecr.eu-north-1.amazonaws.com/backend_redis:latest
     ports:
       - "8002:8002"
     networks:
